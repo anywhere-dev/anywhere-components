@@ -1,6 +1,6 @@
 {
   "name": "anywhere-components",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
@@ -38,8 +38,8 @@
     "webpack": "^3.10.0"
   },
   "devDependencies": {
-    "@storybook/react": "^3.3.6",
     "@storybook/addon-actions": "^3.3.6",
-    "@storybook/addon-links": "^3.3.6"
+    "@storybook/addon-links": "^3.3.6",
+    "@storybook/react": "^3.3.6"
   }
 }
