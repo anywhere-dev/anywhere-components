@@ -1,0 +1,9 @@
+.crud-table{
+    display: flex;
+    flex-direction: column;
+}
+
+.crud-table__buttons{
+    padding-top: 8px;
+    padding-bottom: 8px;
+}
