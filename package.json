@@ -1,6 +1,6 @@
 {
   "name": "anywhere-components",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
@@ -8,6 +8,7 @@
     "watch": "cross-env NODE_ENV=development webpack -w",
     "build:dev": "cross-env NODE_ENV=development webpack",
     "build:production": "cross-env NODE_ENV=production webpack -p",
+    "prepublish": "npm run build:production",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook"
   },
