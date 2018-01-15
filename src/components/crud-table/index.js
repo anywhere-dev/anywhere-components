@@ -1,7 +1,6 @@
 import React, { Component, Fragment } from 'react'
-import { Table, Button, Header, Segment, Modal, Form, Dimmer } from 'semantic-ui-react'
+import { Table, Button, Header, Segment, Modal, Form, Dimmer, Dropdown } from 'semantic-ui-react'
 
-//import './index.css'
 
 class CRUDTable extends Component {
 
@@ -63,12 +62,12 @@ class CRUDTable extends Component {
 
 
     render() {
-        const { columns, rows, onAddRow, onRowClick } = this.props
+        const { columns, rows, onAddRow, onRowClick, actions } = this.props
         return (
             <div>
                 <div className="crud-table">
                     <div className="crud-table__buttons">
-                        <Button icon="filter" onClick={() => this.setState({ showFilter: true })} />
+                        <Button icon="filter" onClick={() => this.setState({ showFilter: true })} disabled={!columns.filter(column => column.filter).length} />
                         {this.renderFilter.call(this)}
                         {this.renderCRUDButtons.call(this)}
                     </div>
@@ -77,6 +76,7 @@ class CRUDTable extends Component {
                             <Table.Header>
                                 <Table.Row>
                                     {columns.map(column => <Table.HeaderCell key={column.name}>{column.description}</Table.HeaderCell>)}
+                                    {actions ? <Table.HeaderCell>Ações</Table.HeaderCell> : ''}
                                 </Table.Row>
                             </Table.Header>
 
@@ -87,6 +87,13 @@ class CRUDTable extends Component {
                                             {columns.map(column => {
                                                 return <Table.Cell key={column.name}>{column.formatter ? column.formatter(row[column.name]) : row[column.name]}</Table.Cell>
                                             })}
+                                            {actions ? <Table.Cell>
+                                                <Dropdown text="Ação">
+                                                    <Dropdown.Menu>
+                                                        {actions.map(({allowAction, action, description }) => <Dropdown.Item disabled={allowAction ? !allowAction(row) : false} onClick={() => action(row)}>{description}</Dropdown.Item>)}
+                                                    </Dropdown.Menu>
+                                                </Dropdown>
+                                            </Table.Cell> : ''}
                                         </Table.Row>
                                     )
                                 })}
