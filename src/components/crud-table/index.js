@@ -88,7 +88,7 @@ class CRUDTable extends Component {
                                                 return <Table.Cell key={column.name}>{column.formatter ? column.formatter(row[column.name]) : row[column.name]}</Table.Cell>
                                             })}
                                             {actions ? <Table.Cell>
-                                                <Dropdown text="Ação">
+                                                <Dropdown text="Ação" fluid>
                                                     <Dropdown.Menu>
                                                         {actions.map(({allowAction, action, description }) => <Dropdown.Item disabled={allowAction ? !allowAction(row) : false} onClick={() => action(row)}>{description}</Dropdown.Item>)}
                                                     </Dropdown.Menu>
