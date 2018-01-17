@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { Table, Button, Header, Segment, Modal, Form, Dimmer, Dropdown } from 'semantic-ui-react'
 
-
 class CRUDTable extends Component {
 
     constructor(props) {
@@ -59,7 +58,6 @@ class CRUDTable extends Component {
             onRowClick(row)
         }
     }
-
 
     render() {
         const { columns, rows, onAddRow, onRowClick, actions } = this.props
