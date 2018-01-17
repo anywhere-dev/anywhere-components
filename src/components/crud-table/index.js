@@ -106,7 +106,7 @@ class CRUDTable extends Component {
                     }
 
                     .crud-table__buttons{
-                        padding - top: 8px;
+                        padding-top: 8px;
                         padding-bottom: 8px;
                     }
                     `}
