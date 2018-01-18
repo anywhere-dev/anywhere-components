@@ -1,6 +1,5 @@
-import React, { Component, Fragment } from 'react'
+import React, { Component } from 'react'
 import { Table, Button, Header, Segment, Modal, Form, Dimmer, Dropdown } from 'semantic-ui-react'
-
 
 class CRUDTable extends Component {
 
@@ -60,7 +59,6 @@ class CRUDTable extends Component {
         }
     }
 
-
     render() {
         const { columns, rows, onAddRow, onRowClick, actions } = this.props
         return (
@@ -108,7 +106,7 @@ class CRUDTable extends Component {
                     }
 
                     .crud-table__buttons{
-                        padding - top: 8px;
+                        padding-top: 8px;
                         padding-bottom: 8px;
                     }
                     `}
