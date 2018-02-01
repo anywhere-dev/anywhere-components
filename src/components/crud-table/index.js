@@ -99,7 +99,7 @@ class CRUDTable extends Component {
                         </Table>
                     </div>
                 </div>
-                <style jsx>{`
+                <style>{`
                     .crud-table{
                         display: flex;
                         flex-direction: column;

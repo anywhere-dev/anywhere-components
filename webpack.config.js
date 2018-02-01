@@ -28,7 +28,9 @@ if (process.env.NODE_ENV === 'production') {
     config.externals = {
         'react': 'react',
         'react-dom': 'react-dom',
-        'semantic-ui-react': 'semantic-ui-react'
+        'semantic-ui-react': 'semantic-ui-react',
+        'material-ui' : 'material-ui',
+        'material-ui-icons' : 'material-ui-icons'
     }
 
     config.plugins = [

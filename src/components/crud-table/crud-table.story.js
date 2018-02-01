@@ -4,7 +4,8 @@ import { storiesOf } from '@storybook/react'
 import { action } from '@storybook/addon-actions'
 import { linkTo } from '@storybook/addon-links'
 
-import CRUDTable from './'
+import CRUDTable from './crud-table-2'
+
 
 const columns = [{ name: 'id', description: 'Id' }, { name: 'fullName', description: 'Nome Completo' }, { name: 'age', description: 'Idade' }, { name: 'profession', description: 'Profissão' }]
 const rows = [
@@ -13,7 +14,7 @@ const rows = [
 ]
 
 const actions = [{ description: 'Excluir', action: action('buttonAction'), allowAction: (row)=> row.age > 17 }]
-
+console.log(CRUDTable)
 storiesOf('CRUD Table', module)
     .add('default', () => <CRUDTable
         title="Pessoas"
@@ -21,7 +22,7 @@ storiesOf('CRUD Table', module)
         rows={rows}
         onRowClick={action('onRowClick')}
         onAdd={action('onAdd')}
-        allowAdd={action('allowAdd')}
+        allowAdd={()=> true}
         onFilter={action('onFilter')}
     />)
     .add('with actions', () => <CRUDTable
