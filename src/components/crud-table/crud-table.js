@@ -1,20 +1,18 @@
 import React, { Component } from 'react'
 
-import { Paper, Grid, Tabs, Tab, Button, IconButton, Table, TableHead, TableRow, TableCell, TableBody, Menu, MenuItem, Hidden, Modal } from 'material-ui'
+import { Paper, Grid, Tabs, Tab, Button, IconButton, Table, TableHead, TableRow, TableCell, TableBody, Menu, MenuItem, Hidden, Modal, Typography } from 'material-ui'
 import ExpansionPanel, {
     ExpansionPanelSummary,
     ExpansionPanelDetails,
-} from 'material-ui/ExpansionPanel'
+  } from 'material-ui/ExpansionPanel'
 import { withStyles } from 'material-ui/styles'
 
 import { MoreHoriz as MoreHorizIcon, ExpandMore as ExpandMoreIcon } from 'material-ui-icons'
 
 const styles = theme => ({
     title: {
-        marginBottom: theme.spacing.unit * 2,
     },
     buttons: {
-        marginBottom: theme.spacing.unit * 2
     },
     filterModal: {
         display: 'flex',
@@ -36,9 +34,9 @@ const actionsMenuStyles = theme => ({
 const ActionsMenu = withStyles(actionsMenuStyles)(({ classes, actions = [], anchorEl, onClose, currentRow = {} }) => {
     return (
         <Menu className={classes.menu} anchorEl={anchorEl} open={!!anchorEl} onClose={onClose}>
-            {actions.map(({ allowAction, action, description }) => {
+            {actions.map(({ allowAction, action, description }, index) => {
                 return (
-                    <MenuItem className={classes.menuItem} disabled={allowAction ? !allowAction(currentRow) : false} onClick={() => action(currentRow)}>{description}</MenuItem>
+                    <MenuItem key={index} className={classes.menuItem} disabled={allowAction ? !allowAction(currentRow) : false} onClick={() => action(currentRow)}>{description}</MenuItem>
                 )
             })}
         </Menu>
@@ -104,7 +102,7 @@ class CRUDTable extends Component {
         return (
             rows.map(row => {
                 return (
-                    <ExpansionPanel>
+                    <ExpansionPanel key={row.id}>
                         <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
                             <h3> {row[columns[0].name]} - {row[columns[1].name]}</h3>
                         </ExpansionPanelSummary>
@@ -167,18 +165,14 @@ class CRUDTable extends Component {
             <Grid container>
                 <Grid item xs={12} className={classes.title}>
                     <Grid container>
-                        <Grid item xs={12}>
-                            <h1>{title}</h1>
-                        </Grid>
-                    </Grid>
-                </Grid>
-                <Grid item xs={12} className={classes.buttons}>
-                    <Grid container>
-                        <Grid item xs={12} md={2}>
-                            <Button fullWidth disabled={!this.allowAdd.call(this)} onClick={onAdd} raised color="primary">Adicionar</Button>
+                        <Grid item xs={12} md={8}>
+                            <Typography variant="title">{title}</Typography>
                         </Grid>
                         <Grid item xs={12} md={2}>
-                            <Button fullWidth disabled={!this.allowFilter.call(this)} raised onClick={this.toggleFilter.bind(this)}>Filtro</Button>
+                            <Button fullWidth disabled={!this.allowAdd.call(this)} onClick={onAdd} variant="raised" color="primary">Adicionar</Button>
+                        </Grid>
+                        <Grid item xs={12} md={2}>
+                            <Button fullWidth disabled={!this.allowFilter.call(this)} variant="flat" onClick={this.toggleFilter.bind(this)}>Filtro</Button>
                         </Grid>
                     </Grid>
                 </Grid>
@@ -193,7 +187,7 @@ class CRUDTable extends Component {
                             </Grid>
                         </Hidden>
                         <Hidden mdUp>
-                            <Grid item xs={12} smDown>
+                            <Grid item xs={12}>
                                 {this.renderMobileList.call(this)}
                             </Grid>
                         </Hidden>
