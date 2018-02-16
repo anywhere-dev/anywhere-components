@@ -4,7 +4,7 @@ import { Paper, Grid, Tabs, Tab, Button, IconButton, Table, TableHead, TableRow,
 import ExpansionPanel, {
     ExpansionPanelSummary,
     ExpansionPanelDetails,
-  } from 'material-ui/ExpansionPanel'
+} from 'material-ui/ExpansionPanel'
 import { withStyles } from 'material-ui/styles'
 
 import { MoreHoriz as MoreHorizIcon, ExpandMore as ExpandMoreIcon } from 'material-ui-icons'
@@ -19,6 +19,13 @@ const styles = theme => ({
         justifyContent: 'center',
         alignContent: 'center',
         alignItems: 'center'
+    },
+    filterModalBody: {
+        width: '100%',
+        maxWidth: theme.spacing.unit * 100,
+        maxHeight: theme.spacing.unit * 50,
+        padding: theme.spacing.unit * 2,
+        outline: 'none'
     }
 })
 
@@ -51,6 +58,15 @@ class CRUDTable extends Component {
             anchorElForActionsMenu: null,
             showFilter: false
         }
+        this.handleActionsButtonClick = this.handleActionsButtonClick.bind(this)
+        this.closeActionsMenu = this.closeActionsMenu.bind(this)
+        this.renderTableHeader = this.renderTableHeader.bind(this)
+        this.renderTableBody = this.renderTableBody.bind(this)
+        this.renderMobileList = this.renderMobileList.bind(this)
+        this.allowAdd = this.allowAdd.bind(this)
+        this.allowFilter = this.allowFilter.bind(this)
+        this.toggleFilter = this.toggleFilter.bind(this)
+        this.renderFilter = this.renderFilter.bind(this)
     }
 
     handleActionsButtonClick(event, row) {
@@ -124,6 +140,10 @@ class CRUDTable extends Component {
         )
     }
 
+    renderMobileRow(row) {
+
+    }
+
     allowAdd() {
         const { allowAdd, onAdd } = this.props
         if (!onAdd) return false
@@ -149,11 +169,12 @@ class CRUDTable extends Component {
     renderFilter() {
         const { showFilter } = this.state
         const { classes, Filter } = this.props
-
         if (!Filter) return null
         return (
-            <Modal className={classes.filterModal} open={showFilter} onClose={this.toggleFilter.bind(this)}>
-                <Filter toggleFilter={this.toggleFilter.bind(this)} />
+            <Modal className={classes.filterModal} open={showFilter} onClose={this.toggleFilter}>
+                <Paper className={classes.filterModalBody}>
+                    <Filter toggleFilter={this.toggleFilter} />
+                </Paper>
             </Modal>
         )
     }
@@ -169,10 +190,10 @@ class CRUDTable extends Component {
                             <Typography variant="title">{title}</Typography>
                         </Grid>
                         <Grid item xs={12} md={2}>
-                            <Button fullWidth disabled={!this.allowAdd.call(this)} onClick={onAdd} variant="raised" color="primary">Adicionar</Button>
+                            <Button fullWidth disabled={!this.allowAdd()} onClick={onAdd} variant="raised" color="primary">Adicionar</Button>
                         </Grid>
                         <Grid item xs={12} md={2}>
-                            <Button fullWidth disabled={!this.allowFilter.call(this)} variant="flat" onClick={this.toggleFilter.bind(this)}>Filtro</Button>
+                            <Button fullWidth disabled={!this.allowFilter()} variant="flat" onClick={this.toggleFilter}>Filtro</Button>
                         </Grid>
                     </Grid>
                 </Grid>
@@ -181,20 +202,20 @@ class CRUDTable extends Component {
                         <Hidden smDown>
                             <Grid item xs={12}>
                                 <Table>
-                                    {this.renderTableHeader.call(this)}
-                                    {this.renderTableBody.call(this)}
+                                    {this.renderTableHeader()}
+                                    {this.renderTableBody()}
                                 </Table>
                             </Grid>
                         </Hidden>
                         <Hidden mdUp>
                             <Grid item xs={12}>
-                                {this.renderMobileList.call(this)}
+                                {this.renderMobileList()}
                             </Grid>
                         </Hidden>
                     </Grid>
                 </Grid>
-                <ActionsMenu actions={actions} onClose={this.closeActionsMenu.bind(this)} anchorEl={anchorElForActionsMenu} currentRow={currentRowForActionsMenu} />
-                {this.renderFilter.call(this)}
+                <ActionsMenu actions={actions} onClose={this.closeActionsMenu} anchorEl={anchorElForActionsMenu} currentRow={currentRowForActionsMenu} />
+                {this.renderFilter()}
             </Grid>)
     }
 
