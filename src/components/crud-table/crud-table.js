@@ -125,6 +125,13 @@ class CRUDTable extends Component {
                         <ExpansionPanelDetails>
                             <Grid container>
                                 {columns.map((column) => {
+                                    if (column.name.includes('.')) {
+                                        const subsections = column.name.split('.')
+                                        row[column.name] = subsections.reduce((lastValue, currentValue, index) => {
+                                            console.log(lastValue[subsections[index]])
+                                            return lastValue[subsections[index]]
+                                        }, row)
+                                    }
                                     return (
                                         <Grid key={column.name} item xs={12}>
                                             <p><b>{column.description}</b>: {column.formatter ? column.formatter(row[column.name]) : row[column.name]}</p>
