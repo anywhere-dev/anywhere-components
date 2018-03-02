@@ -33,6 +33,8 @@ import { JssProvider } from "react-jss";
 
 import { createGenerateClassName } from "react-jss";
 
+const generateClassName = createGenerateClassName();
+
 const styles = theme => ({
   title: {},
   buttons: {},

@@ -1,4 +1,5 @@
 const webpack = require("webpack");
+const nodeExternals = require("webpack-node-externals");
 const path = require("path");
 
 const config = {
@@ -25,13 +26,7 @@ const config = {
 };
 
 if (process.env.NODE_ENV === "production") {
-  config.externals = {
-    react: "react",
-    "react-dom": "react-dom",
-    "material-ui": "material-ui",
-    "material-ui-icons": "material-ui-icons",
-    "react-jss": "react-jss"
-  };
+  config.externals = [nodeExternals()];
 
   config.plugins = [
     new webpack.optimize.AggressiveMergingPlugin(),

@@ -37,7 +37,8 @@
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
     "react-jss": "^8.3.3",
-    "webpack": "^3.10.0"
+    "webpack": "^3.10.0",
+    "webpack-node-externals": "^1.6.0"
   },
   "devDependencies": {
     "@storybook/addon-actions": "^3.3.6",
