@@ -1,52 +1,52 @@
-const webpack = require('webpack')
-const path = require('path')
+const webpack = require("webpack");
+const path = require("path");
 
 const config = {
-    entry: path.resolve(__dirname, 'src'),
-    output: {
-        path: path.resolve(__dirname, 'lib'),
-        filename: 'index.js',
-        libraryTarget: 'umd',
-        library: 'anywhere-components'
-    },
-    module: {
-        rules: [
-            {
-                loader: 'babel-loader',
-                test: /.js$/,
-                exclude: /node_modules/,
-                include: path.resolve(__dirname, 'src'),
-                options: {
-                    presets: ['env', 'react']
-                }
-            }
-        ]
-    }
-}
-
-if (process.env.NODE_ENV === 'production') {
-    config.externals = {
-        'react': 'react',
-        'react-dom': 'react-dom',
-        'material-ui' : 'material-ui',
-        'material-ui-icons' : 'material-ui-icons'
-    }
-
-    config.plugins = [
-        new webpack.optimize.AggressiveMergingPlugin(),
-        new webpack.optimize.UglifyJsPlugin({
-            beautify: false,
-            mangle: {
-                screw_ie8: true,
-            },
-            compress: {
-                warnings: false,
-                screw_ie8: true
-            },
-            comments: false
-        }),
+  entry: path.resolve(__dirname, "src"),
+  output: {
+    path: path.resolve(__dirname, "lib"),
+    filename: "index.js",
+    libraryTarget: "umd",
+    library: "anywhere-components"
+  },
+  module: {
+    rules: [
+      {
+        loader: "babel-loader",
+        test: /.js$/,
+        exclude: /node_modules/,
+        include: path.resolve(__dirname, "src"),
+        options: {
+          presets: ["env", "react"]
+        }
+      }
     ]
+  }
+};
 
+if (process.env.NODE_ENV === "production") {
+  config.externals = {
+    react: "react",
+    "react-dom": "react-dom",
+    "material-ui": "material-ui",
+    "material-ui-icons": "material-ui-icons",
+    "react-jss": "react-jss"
+  };
+
+  config.plugins = [
+    new webpack.optimize.AggressiveMergingPlugin(),
+    new webpack.optimize.UglifyJsPlugin({
+      beautify: false,
+      mangle: {
+        screw_ie8: true
+      },
+      compress: {
+        warnings: false,
+        screw_ie8: true
+      },
+      comments: false
+    })
+  ];
 }
 
-module.exports = config
+module.exports = config;

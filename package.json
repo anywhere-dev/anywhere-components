@@ -8,7 +8,7 @@
     "watch": "cross-env NODE_ENV=development webpack -w",
     "build:dev": "cross-env NODE_ENV=development webpack",
     "build:production": "cross-env NODE_ENV=production webpack -p",
-    "prepublish": "npm run build:dev",
+    "prepublish": "npm run build:production",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook"
   },
@@ -36,6 +36,7 @@
     "material-ui-icons": "^1.0.0-beta.17",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
+    "react-jss": "^8.3.3",
     "webpack": "^3.10.0"
   },
   "devDependencies": {
