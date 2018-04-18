@@ -307,6 +307,20 @@ class CRUDTable extends Component {
                   Filtro
                 </Button>
               </Grid>
+              <Grid item xs={12}>
+                {rows.length >= 100 ? (
+                  <Typography
+                    variant="textSecondary"
+                    color="error"
+                    align="right"
+                  >
+                    Pesquisa limitada a 100 registros, utilize os filtros para
+                    mais resultados.
+                  </Typography>
+                ) : (
+                  ""
+                )}
+              </Grid>
             </Grid>
           </Grid>
           <Grid item xs={12}>
