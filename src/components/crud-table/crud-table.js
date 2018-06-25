@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 
 import {
   Paper,
@@ -105,6 +105,8 @@ class CRUDTable extends Component {
     this.allowFilter = this.allowFilter.bind(this);
     this.toggleFilter = this.toggleFilter.bind(this);
     this.renderFilter = this.renderFilter.bind(this);
+    this.renderActionButtons = this.renderActionButtons.bind(this);
+    this.renderTitle = this.renderTitle.bind(this);
   }
 
   handleActionsButtonClick(event, row) {
@@ -146,7 +148,7 @@ class CRUDTable extends Component {
                 return (
                   <TableCell key={column.name}>
                     {column.formatter
-                      ? column.formatter(row[column.name])
+                      ? column.formatter(row[column.name], row)
                       : row[column.name]}
                   </TableCell>
                 );
@@ -189,7 +191,7 @@ class CRUDTable extends Component {
                   const subsections = column.name.split(".");
                   row[column.name] = subsections.reduce(
                     (lastValue, currentValue, index) => {
-                      console.log(lastValue[subsections[index]]);
+                      if (!lastValue) return "";
                       return lastValue[subsections[index]];
                     },
                     row
@@ -200,7 +202,7 @@ class CRUDTable extends Component {
                     <p>
                       <b>{column.description}</b>:{" "}
                       {column.formatter
-                        ? column.formatter(row[column.name])
+                        ? column.formatter(row[column.name], row)
                         : row[column.name]}
                     </p>
                   </Grid>
@@ -257,6 +259,7 @@ class CRUDTable extends Component {
         className={classes.filterModal}
         open={showFilter}
         onClose={this.toggleFilter}
+        disableEnforceFocus
       >
         <Paper className={classes.filterModalBody}>
           <Filter toggleFilter={this.toggleFilter} />
@@ -265,64 +268,67 @@ class CRUDTable extends Component {
     );
   }
 
+  renderActionButtons() {
+    const { onAdd } = this.props;
+    if (this.props.hideActionButtons) {
+      return null;
+    }
+    return (
+      <Fragment>
+        <Grid item xs={12} md={2}>
+          <Button
+            fullWidth
+            disabled={!this.allowAdd()}
+            onClick={onAdd}
+            variant="raised"
+            color="primary"
+          >
+            Adicionar
+          </Button>
+        </Grid>
+        <Grid item xs={12} md={2}>
+          <Button
+            fullWidth
+            disabled={!this.allowFilter()}
+            variant="flat"
+            onClick={this.toggleFilter}
+          >
+            Filtro
+          </Button>
+        </Grid>
+      </Fragment>
+    );
+  }
+
+  renderTitle() {
+    if (this.props.hideTitle) {
+      return null;
+    }
+    return (
+      <Grid item xs={12} md={8}>
+        <Typography variant="title">{this.props.title}</Typography>
+      </Grid>
+    );
+  }
+
   render() {
     const { anchorElForActionsMenu, currentRowForActionsMenu } = this.state;
-    const {
-      classes,
-      title,
-      columns,
-      rows,
-      onAddRow,
-      onRowClick,
-      actions,
-      onAdd,
-      filter
-    } = this.props;
+    const { classes, rows, actions } = this.props;
     return (
       <JssProvider generateClassName={generateClassName}>
         <Grid container>
-          <Grid item xs={12} className={classes.title}>
-            <Grid container>
-              <Grid item xs={12} md={8}>
-                <Typography variant="title">{title}</Typography>
-              </Grid>
-              <Grid item xs={12} md={2}>
-                <Button
-                  fullWidth
-                  disabled={!this.allowAdd()}
-                  onClick={onAdd}
-                  variant="raised"
-                  color="primary"
-                >
-                  Adicionar
-                </Button>
-              </Grid>
-              <Grid item xs={12} md={2}>
-                <Button
-                  fullWidth
-                  disabled={!this.allowFilter()}
-                  variant="flat"
-                  onClick={this.toggleFilter}
-                >
-                  Filtro
-                </Button>
-              </Grid>
-              <Grid item xs={12}>
-                {rows.length >= 100 ? (
-                  <Typography
-                    variant="textSecondary"
-                    color="error"
-                    align="right"
-                  >
-                    Pesquisa limitada a 100 registros, utilize os filtros para
-                    mais resultados.
-                  </Typography>
-                ) : (
-                  ""
-                )}
-              </Grid>
+          {this.renderTitle()}
+          {this.renderActionButtons()}
+          {rows.length >= 100 ? (
+            <Grid item xs={12}>
+              <Typography variant="textSecondary" color="error" align="right">
+                Pesquisa limitada a 100 registros, utilize os filtros para mais
+                resultados.
+              </Typography>
             </Grid>
-          </Grid>
+          ) : (
+            ""
+          )}
           <Grid item xs={12}>
             <Grid container>
               <Hidden smDown>
