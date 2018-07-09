@@ -3,8 +3,6 @@ import React, { Component, Fragment } from "react";
 import {
   Paper,
   Grid,
-  Tabs,
-  Tab,
   Button,
   IconButton,
   Table,
@@ -26,7 +24,9 @@ import { withStyles } from "material-ui/styles";
 
 import {
   MoreHoriz as MoreHorizIcon,
-  ExpandMore as ExpandMoreIcon
+  ExpandMore as ExpandMoreIcon,
+  Add as AddIcon,
+  FilterList as FilterListIcon
 } from "material-ui-icons";
 
 import { JssProvider } from "react-jss";
@@ -43,6 +43,18 @@ const styles = theme => ({
     justifyContent: "center",
     alignContent: "center",
     alignItems: "center"
+  },
+  titleContainer: {
+    display: "flex",
+    alignItems: "center"
+  },
+  fabContainer: {
+    padding: theme.spacing.unit,
+    display: "flex",
+    justifyContent: "flex-end"
+  },
+  fab: {
+    padding: theme.spacing.unit
   },
   filterModalBody: {
     width: "100%",
@@ -269,34 +281,28 @@ class CRUDTable extends Component {
   }
 
   renderActionButtons() {
-    const { onAdd } = this.props;
+    const { onAdd, classes } = this.props;
     if (this.props.hideActionButtons) {
       return null;
     }
     return (
-      <Fragment>
-        <Grid item xs={12} md={2}>
-          <Button
-            fullWidth
-            disabled={!this.allowAdd()}
-            onClick={onAdd}
-            variant="raised"
-            color="primary"
-          >
-            Adicionar
-          </Button>
-        </Grid>
-        <Grid item xs={12} md={2}>
-          <Button
-            fullWidth
-            disabled={!this.allowFilter()}
-            variant="flat"
-            onClick={this.toggleFilter}
-          >
-            Filtro
-          </Button>
-        </Grid>
-      </Fragment>
+      <Grid item xs={12} md={4} className={classes.fabContainer}>
+        <Button
+          className={classes.fab}
+          disabled={!this.allowFilter()}
+          onClick={this.toggleFilter}
+        >
+          <FilterListIcon />
+        </Button>
+        <Button
+          className={classes.fab}
+          disabled={!this.allowAdd()}
+          onClick={onAdd}
+          color="primary"
+        >
+          <AddIcon />
+        </Button>
+      </Grid>
     );
   }
 
@@ -305,7 +311,7 @@ class CRUDTable extends Component {
       return null;
     }
     return (
-      <Grid item xs={12} md={8}>
+      <Grid item xs={12} md={8} className={this.props.classes.titleContainer}>
         <Typography variant="title">{this.props.title}</Typography>
       </Grid>
     );
@@ -316,44 +322,60 @@ class CRUDTable extends Component {
     const { classes, rows, actions } = this.props;
     return (
       <JssProvider generateClassName={generateClassName}>
-        <Grid container>
-          {this.renderTitle()}
-          {this.renderActionButtons()}
-          {rows.length >= 100 ? (
+        <Fragment>
+          <Grid container>
+            {this.renderTitle()}
+            {this.renderActionButtons()}
+            {rows.length >= 100 ? (
+              <Grid item xs={12}>
+                <Typography variant="textSecondary" color="error" align="right">
+                  Pesquisa limitada a 100 registros, utilize os filtros para
+                  mais resultados.
+                </Typography>
+              </Grid>
+            ) : (
+              ""
+            )}
             <Grid item xs={12}>
-              <Typography variant="textSecondary" color="error" align="right">
-                Pesquisa limitada a 100 registros, utilize os filtros para mais
-                resultados.
-              </Typography>
+              <Grid container>
+                <Hidden smDown>
+                  <Grid item xs={12}>
+                    <Paper>
+                      <Table>
+                        {this.renderTableHeader()}
+                        {this.renderTableBody()}
+                        {rows.length == 0 ? (
+                          <Typography align="center">
+                            Nenhum registro
+                          </Typography>
+                        ) : (
+                          ""
+                        )}
+                      </Table>
+                    </Paper>
+                  </Grid>
+                </Hidden>
+                <Hidden mdUp>
+                  <Grid item xs={12}>
+                    {this.renderMobileList()}
+                    {rows.length == 0 ? (
+                      <Typography align="center">Nenhum registro</Typography>
+                    ) : (
+                      ""
+                    )}
+                  </Grid>
+                </Hidden>
+              </Grid>
             </Grid>
-          ) : (
-            ""
-          )}
-          <Grid item xs={12}>
-            <Grid container>
-              <Hidden smDown>
-                <Grid item xs={12}>
-                  <Table>
-                    {this.renderTableHeader()}
-                    {this.renderTableBody()}
-                  </Table>
-                </Grid>
-              </Hidden>
-              <Hidden mdUp>
-                <Grid item xs={12}>
-                  {this.renderMobileList()}
-                </Grid>
-              </Hidden>
-            </Grid>
+            <ActionsMenu
+              actions={actions}
+              onClose={this.closeActionsMenu}
+              anchorEl={anchorElForActionsMenu}
+              currentRow={currentRowForActionsMenu}
+            />
+            {this.renderFilter()}
           </Grid>
-          <ActionsMenu
-            actions={actions}
-            onClose={this.closeActionsMenu}
-            anchorEl={anchorElForActionsMenu}
-            currentRow={currentRowForActionsMenu}
-          />
-          {this.renderFilter()}
-        </Grid>
+        </Fragment>
       </JssProvider>
     );
   }
