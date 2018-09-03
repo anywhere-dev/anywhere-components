@@ -1,14 +1,15 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import {
   Grid,
-  Button,
   Typography,
   TextField,
   FormControl,
   InputLabel,
   Select,
   MenuItem,
-  Paper
+  Paper,
+  IconButton,
+  Button
 } from "material-ui";
 
 import {
@@ -17,6 +18,7 @@ import {
   Close as CloseIcon
 } from "material-ui-icons";
 import { Formik } from "formik";
+import moment from "moment";
 
 const InputField = ({
   value,
@@ -40,6 +42,33 @@ const InputField = ({
     onBlur={onBlur}
     onChange={onChange}
     disabled={disabled}
+  />
+);
+
+const DateInput = ({
+  value,
+  name,
+  onChange,
+  onBlur,
+  error,
+  touched,
+  label,
+  disabled
+}) => (
+  <TextField
+    margin="normal"
+    type="date"
+    name={name}
+    value={value}
+    error={!!error && touched}
+    helperText={touched && error}
+    FormHelperTextProps={{ error: true }}
+    fullWidth
+    label={label}
+    onBlur={onBlur}
+    onChange={onChange}
+    disabled={disabled}
+    defaultValue={value}
   />
 );
 
@@ -91,12 +120,21 @@ class CRUDForm extends Component {
     { values, errors, touched, handleChange, handleBlur },
     { type, config }
   ) {
+    let value = values[config.name];
+    if (config.name.includes(".")) {
+      const subsections = config.name.split(".");
+      value = subsections.reduce((lastValue, currentValue, index) => {
+        if (!lastValue) return "";
+        return lastValue[subsections[index]];
+      }, values);
+    }
+
     switch (type) {
       case "input":
         return (
           <InputField
             name={config.name}
-            value={values[config.name]}
+            value={value}
             error={errors[config.name]}
             touched={touched[config.name]}
             label={config.label}
@@ -106,7 +144,32 @@ class CRUDForm extends Component {
                 ? e => config.handleChange(e, handleChange)
                 : handleChange
             }
-            disabled={config.disabled}
+            disabled={
+              typeof config.disabled == "function"
+                ? config.disabled(values)
+                : config.disabled
+            }
+          />
+        );
+      case "date-input":
+        return (
+          <DateInput
+            name={config.name}
+            value={value}
+            error={errors[config.name]}
+            touched={touched[config.name]}
+            label={config.label}
+            onBlur={handleBlur}
+            onChange={
+              config.handleChange
+                ? e => config.handleChange(e, handleChange)
+                : handleChange
+            }
+            disabled={
+              typeof config.disabled == "function"
+                ? config.disabled(values)
+                : config.disabled
+            }
           />
         );
       case "select":
@@ -123,7 +186,11 @@ class CRUDForm extends Component {
                 ? e => config.handleChange(e, handleChange)
                 : handleChange
             }
-            disabled={config.disabled}
+            disabled={
+              typeof config.disabled == "function"
+                ? config.disabled(values)
+                : config.disabled
+            }
             options={config.options}
             optionsConfig={config.optionsConfig}
           />
@@ -162,7 +229,15 @@ class CRUDForm extends Component {
                       }}
                     >
                       <Button onClick={onBack} disabled={!onBack}>
-                        {formControl.dirty ? <CloseIcon /> : <ArrowBackIcon />}
+                        {formControl.dirty ? (
+                          <Fragment>
+                            <CloseIcon />
+                          </Fragment>
+                        ) : (
+                          <Fragment>
+                            <ArrowBackIcon />
+                          </Fragment>
+                        )}
                       </Button>
                       <Typography variant="title">{title}</Typography>
                     </div>
@@ -178,6 +253,7 @@ class CRUDForm extends Component {
                         disabled={!formControl.isValid}
                       >
                         <DoneIcon />
+                        <Typography variant="button">Salvar</Typography>
                       </Button>
                     </div>
                   </Grid>

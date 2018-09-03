@@ -3,7 +3,7 @@ import React, { Component, Fragment } from "react";
 import {
   Paper,
   Grid,
-  Button,
+  Tooltip,
   IconButton,
   Table,
   TableHead,
@@ -14,7 +14,8 @@ import {
   MenuItem,
   Hidden,
   Modal,
-  Typography
+  Typography,
+  Button
 } from "material-ui";
 import ExpansionPanel, {
   ExpansionPanelSummary,
@@ -286,13 +287,14 @@ class CRUDTable extends Component {
       return null;
     }
     return (
-      <Grid item xs={12} md={4} className={classes.fabContainer}>
+      <Grid item xs={4} md={4} className={classes.fabContainer}>
         <Button
           className={classes.fab}
           disabled={!this.allowFilter()}
           onClick={this.toggleFilter}
         >
           <FilterListIcon />
+          <Typography variant="button">Filtro</Typography>
         </Button>
         <Button
           className={classes.fab}
@@ -301,6 +303,7 @@ class CRUDTable extends Component {
           color="primary"
         >
           <AddIcon />
+          <Typography variant="button">Adicionar</Typography>
         </Button>
       </Grid>
     );
@@ -311,7 +314,7 @@ class CRUDTable extends Component {
       return null;
     }
     return (
-      <Grid item xs={12} md={8} className={this.props.classes.titleContainer}>
+      <Grid item xs={8} md={8} className={this.props.classes.titleContainer}>
         <Typography variant="title">{this.props.title}</Typography>
       </Grid>
     );
@@ -344,13 +347,6 @@ class CRUDTable extends Component {
                       <Table>
                         {this.renderTableHeader()}
                         {this.renderTableBody()}
-                        {rows.length == 0 ? (
-                          <Typography align="center">
-                            Nenhum registro
-                          </Typography>
-                        ) : (
-                          ""
-                        )}
                       </Table>
                     </Paper>
                   </Grid>
