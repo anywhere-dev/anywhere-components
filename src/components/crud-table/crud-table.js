@@ -144,7 +144,7 @@ class CRUDTable extends Component {
           {columns.map(column => (
             <TableCell key={column.name}>{column.description}</TableCell>
           ))}
-          {actions ? <TableCell>Ações</TableCell> : ""}
+          {actions && actions.length ? <TableCell>Ações</TableCell> : ""}
         </TableRow>
       </TableHead>
     );
@@ -166,7 +166,7 @@ class CRUDTable extends Component {
                   </TableCell>
                 );
               })}
-              {actions ? (
+              {actions && actions.length ? (
                 <TableCell>
                   <IconButton>
                     <MoreHorizIcon
