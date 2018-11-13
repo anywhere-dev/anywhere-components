@@ -60,7 +60,6 @@ const styles = theme => ({
   filterModalBody: {
     width: "100%",
     maxWidth: theme.spacing.unit * 100,
-    maxHeight: theme.spacing.unit * 50,
     padding: theme.spacing.unit * 2,
     outline: "none"
   }
