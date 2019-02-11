@@ -9,7 +9,8 @@ import {
   MenuItem,
   Paper,
   IconButton,
-  Button
+  Button,
+  LinearProgress
 } from "material-ui";
 
 import {
@@ -116,10 +117,17 @@ class SelectField extends Component {
 }
 
 class CRUDForm extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {};
+    this.renderField = this.renderField.bind(this);
+  }
+
   renderField(
     { values, errors, touched, handleChange, handleBlur },
     { type, config }
   ) {
+    const { loading } = this.props;
     let value = values[config.name];
     if (config.name.includes(".")) {
       const subsections = config.name.split(".");
@@ -145,9 +153,10 @@ class CRUDForm extends Component {
                 : handleChange
             }
             disabled={
-              typeof config.disabled == "function"
+              loading ||
+              (typeof config.disabled == "function"
                 ? config.disabled(values)
-                : config.disabled
+                : config.disabled)
             }
           />
         );
@@ -166,9 +175,10 @@ class CRUDForm extends Component {
                 : handleChange
             }
             disabled={
-              typeof config.disabled == "function"
+              loading ||
+              (typeof config.disabled == "function"
                 ? config.disabled(values)
-                : config.disabled
+                : config.disabled)
             }
           />
         );
@@ -176,7 +186,7 @@ class CRUDForm extends Component {
         return (
           <SelectField
             name={config.name}
-            value={values[config.name]}
+            value={value}
             error={errors[config.name]}
             touched={touched[config.name]}
             label={config.label}
@@ -187,9 +197,10 @@ class CRUDForm extends Component {
                 : handleChange
             }
             disabled={
-              typeof config.disabled == "function"
+              loading ||
+              (typeof config.disabled == "function"
                 ? config.disabled(values)
-                : config.disabled
+                : config.disabled)
             }
             options={config.options}
             optionsConfig={config.optionsConfig}
@@ -199,7 +210,14 @@ class CRUDForm extends Component {
   }
 
   render() {
-    const { title, fields, initialValues, onSubmit, onBack } = this.props;
+    const {
+      title,
+      fields,
+      initialValues,
+      onSubmit,
+      onBack,
+      loading
+    } = this.props;
     return (
       <Formik
         initialValues={initialValues}
@@ -208,7 +226,16 @@ class CRUDForm extends Component {
         validate={values => {
           const errors = {};
           fields.forEach(({ validation, config }) => {
-            if (validation && !validation(values[config.name])) {
+            let value = values[config.name];
+            if (config.name.includes(".")) {
+              const subsections = config.name.split(".");
+              value = subsections.reduce((lastValue, currentValue, index) => {
+                if (!lastValue) return "";
+                return lastValue[subsections[index]];
+              }, values);
+            }
+            if (validation && !validation(value)) {
+              debugger;
               errors[config.name] = "Inválido";
             }
           });
@@ -228,7 +255,7 @@ class CRUDForm extends Component {
                         height: "100%"
                       }}
                     >
-                      <Button onClick={onBack} disabled={!onBack}>
+                      <Button onClick={onBack} disabled={!onBack || loading}>
                         {formControl.dirty ? (
                           <Fragment>
                             <CloseIcon />
@@ -250,7 +277,7 @@ class CRUDForm extends Component {
                       <Button
                         type="submit"
                         color="primary"
-                        disabled={!formControl.isValid}
+                        disabled={!formControl.isValid || loading}
                       >
                         <DoneIcon />
                         <Typography variant="button">Salvar</Typography>
@@ -262,6 +289,7 @@ class CRUDForm extends Component {
 
               <Grid item xs={12}>
                 <Paper style={{ padding: 16 }}>
+                  {loading && <LinearProgress />}
                   <Grid container>
                     {fields.map(field => (
                       <Grid item xs={12} md={field.config.width || 12}>

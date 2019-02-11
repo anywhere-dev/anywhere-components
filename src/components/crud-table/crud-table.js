@@ -15,7 +15,8 @@ import {
   Hidden,
   Modal,
   Typography,
-  Button
+  Button,
+  LinearProgress
 } from "material-ui";
 import ExpansionPanel, {
   ExpansionPanelSummary,
@@ -89,7 +90,10 @@ const ActionsMenu = withStyles(actionsMenuStyles)(
               key={index}
               className={classes.menuItem}
               disabled={allowAction ? !allowAction(currentRow) : false}
-              onClick={() => action(currentRow)}
+              onClick={() => {
+                action(currentRow);
+                onClose();
+              }}
             >
               {description}
             </MenuItem>
@@ -150,13 +154,23 @@ class CRUDTable extends Component {
   }
 
   renderTableBody() {
-    const { columns, rows, actions } = this.props;
+    const { columns, rows, actions, loading } = this.props;
     return (
       <TableBody>
         {rows.map(row => {
           return (
             <TableRow hover key={row.id}>
               {columns.map(column => {
+                if (column.name.includes(".")) {
+                  const subsections = column.name.split(".");
+                  row[column.name] = subsections.reduce(
+                    (lastValue, currentValue, index) => {
+                      if (!lastValue) return "";
+                      return lastValue[subsections[index]];
+                    },
+                    row
+                  );
+                }
                 return (
                   <TableCell key={column.name}>
                     {column.formatter
@@ -167,7 +181,7 @@ class CRUDTable extends Component {
               })}
               {actions && actions.length ? (
                 <TableCell>
-                  <IconButton>
+                  <IconButton disabled={loading}>
                     <MoreHorizIcon
                       onClick={event =>
                         this.handleActionsButtonClick.call(this, event, row)
@@ -192,7 +206,6 @@ class CRUDTable extends Component {
         <ExpansionPanel key={row.id}>
           <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
             <h3>
-              {" "}
               {row[columns[0].name]} - {row[columns[1].name]}
             </h3>
           </ExpansionPanelSummary>
@@ -321,7 +334,7 @@ class CRUDTable extends Component {
 
   render() {
     const { anchorElForActionsMenu, currentRowForActionsMenu } = this.state;
-    const { classes, rows, actions } = this.props;
+    const { classes, rows, actions, loading } = this.props;
     return (
       <JssProvider generateClassName={generateClassName}>
         <Fragment>
@@ -343,6 +356,7 @@ class CRUDTable extends Component {
                 <Hidden smDown>
                   <Grid item xs={12}>
                     <Paper>
+                      {loading && <LinearProgress />}
                       <Table>
                         {this.renderTableHeader()}
                         {this.renderTableBody()}
