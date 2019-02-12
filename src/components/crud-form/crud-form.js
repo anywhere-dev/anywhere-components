@@ -149,7 +149,7 @@ class CRUDForm extends Component {
             onBlur={handleBlur}
             onChange={
               config.handleChange
-                ? e => config.handleChange(e, handleChange)
+                ? e => config.handleChange(e, handleChange, values)
                 : handleChange
             }
             disabled={
@@ -171,7 +171,7 @@ class CRUDForm extends Component {
             onBlur={handleBlur}
             onChange={
               config.handleChange
-                ? e => config.handleChange(e, handleChange)
+                ? e => config.handleChange(e, handleChange, values)
                 : handleChange
             }
             disabled={
@@ -193,7 +193,7 @@ class CRUDForm extends Component {
             onBlur={handleBlur}
             onChange={
               config.handleChange
-                ? e => config.handleChange(e, handleChange)
+                ? e => config.handleChange(e, handleChange, values)
                 : handleChange
             }
             disabled={
@@ -235,7 +235,6 @@ class CRUDForm extends Component {
               }, values);
             }
             if (validation && !validation(value)) {
-              debugger;
               errors[config.name] = "Inválido";
             }
           });
