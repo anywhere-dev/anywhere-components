@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from "react";
+import React, { Component, Fragment, createRef } from "react";
 import {
   Grid,
   Typography,
@@ -10,7 +10,11 @@ import {
   Paper,
   IconButton,
   Button,
-  LinearProgress
+  LinearProgress,
+  FormLabel,
+  FormGroup,
+  Checkbox,
+  FormControlLabel
 } from "material-ui";
 
 import {
@@ -29,7 +33,8 @@ const InputField = ({
   error,
   touched,
   label,
-  disabled
+  disabled,
+  multiline
 }) => (
   <TextField
     margin="normal"
@@ -39,6 +44,7 @@ const InputField = ({
     helperText={touched && error}
     FormHelperTextProps={{ error: true }}
     fullWidth
+    multiline={multiline}
     label={label}
     onBlur={onBlur}
     onChange={onChange}
@@ -116,6 +122,123 @@ class SelectField extends Component {
   }
 }
 
+class CheckboxField extends Component {
+  render() {
+    const {
+      setFieldValue,
+      label,
+      value = [],
+      onChange,
+      onBlur,
+      name,
+      optionsConfig,
+      disabled,
+      options = []
+    } = this.props;
+    return (
+      <FormControl component="fieldset" name={name}>
+        <FormLabel component="legend">{label}</FormLabel>
+        {options.map(option => {
+          return (
+            <FormGroup>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    disabled={disabled}
+                    checked={value.find(
+                      i => i[optionsConfig.value] == option[optionsConfig.value]
+                    )}
+                    value={option[optionsConfig.value]}
+                    onClick={() => {
+                      const newValue = [...value];
+                      const valueInArray = newValue.find(
+                        i =>
+                          i[optionsConfig.value] == option[optionsConfig.value]
+                      );
+                      if (valueInArray) {
+                        newValue.splice(newValue.indexOf(valueInArray), 1);
+                      } else {
+                        newValue.push(option);
+                      }
+                      setFieldValue(name, newValue);
+                    }}
+                    onChange={onChange}
+                  />
+                }
+                label={option[optionsConfig.description]}
+              />
+            </FormGroup>
+          );
+        })}
+      </FormControl>
+    );
+  }
+}
+
+class ImageUploadField extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {};
+    this.handleInputChange = this.handleInputChange.bind(this);
+    this.fileInput = createRef();
+  }
+
+  parseToBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = error => reject(error);
+    });
+  }
+
+  handleInputChange(e) {
+    const { setFieldValue, name } = this.props;
+    this.setState({ loading: true });
+    if (
+      this.fileInput &&
+      this.fileInput.current &&
+      this.fileInput.current.files &&
+      this.fileInput.current.files[0]
+    ) {
+      this.parseToBase64(this.fileInput.current.files[0]).then(base64 => {
+        setFieldValue(name, base64);
+        this.setState({ loading: false });
+      });
+    }
+  }
+
+  render() {
+    const { label, name, value, disabled } = this.props;
+    return (
+      <div style={{ display: "flex", flexDirection: "column" }}>
+        <input
+          accept="image/*"
+          style={{ display: "none" }}
+          id="raised-button-file"
+          multiple
+          type="file"
+          ref={this.fileInput}
+          onChange={this.handleInputChange}
+          name={name}
+          disabled={disabled}
+        />
+        <FormLabel component="label" style={{ marginBottom: "8px" }}>
+          {label}
+        </FormLabel>
+        <label htmlFor="raised-button-file" style={{ marginBottom: "8px" }}>
+          <Button variant="raised" component="span" disabled={disabled}>
+            Selecionar
+          </Button>
+        </label>
+        {value && (
+          <img src={value} style={{ width: "256px", height: "auto" }} />
+        )}
+      </div>
+    );
+  }
+}
+
 class CRUDForm extends Component {
   constructor(props) {
     super(props);
@@ -124,7 +247,7 @@ class CRUDForm extends Component {
   }
 
   renderField(
-    { values, errors, touched, handleChange, handleBlur },
+    { values, errors, touched, handleChange, handleBlur, setFieldValue },
     { type, config }
   ) {
     const { loading } = this.props;
@@ -146,6 +269,7 @@ class CRUDForm extends Component {
             error={errors[config.name]}
             touched={touched[config.name]}
             label={config.label}
+            multiline={config.multiline}
             onBlur={handleBlur}
             onChange={
               config.handleChange
@@ -204,6 +328,54 @@ class CRUDForm extends Component {
             }
             options={config.options}
             optionsConfig={config.optionsConfig}
+          />
+        );
+      case "checkbox":
+        return (
+          <CheckboxField
+            setFieldValue={setFieldValue}
+            name={config.name}
+            value={value}
+            error={errors[config.name]}
+            label={config.label}
+            onBlur={handleBlur}
+            onChange={
+              config.handleChange
+                ? e => config.handleChange(e, handleChange, values)
+                : handleChange
+            }
+            options={config.options}
+            optionsConfig={config.optionsConfig}
+            values={values}
+            disabled={
+              loading ||
+              (typeof config.disabled == "function"
+                ? config.disabled(values)
+                : config.disabled)
+            }
+          />
+        );
+      case "image-upload":
+        return (
+          <ImageUploadField
+            setFieldValue={setFieldValue}
+            name={config.name}
+            value={value}
+            error={errors[config.name]}
+            label={config.label}
+            onBlur={handleBlur}
+            onChange={
+              config.handleChange
+                ? e => config.handleChange(e, handleChange, values)
+                : handleChange
+            }
+            values={values}
+            disabled={
+              loading ||
+              (typeof config.disabled == "function"
+                ? config.disabled(values)
+                : config.disabled)
+            }
           />
         );
     }
